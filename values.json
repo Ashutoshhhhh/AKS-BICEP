@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "centralindia"
+        },
+        "resourcePrefix":{
+            "value": "udpdemo"
+        },
+        "vnetAddressSpace":{
+            "value": "172.172.0.0/16"
+        },
+        "subnetPrefix":{
+            "value": "172.172.1.0/24"
+        },
+        "clusterName":{
+            "value": "udpdemo-aks"
+        },
+        "nodePoolName":{
+            "value": "updemoPool"
+        },
+        "nodeCount":{
+            "value": 2
+        },
+        "minNodeCount":{
+            "value": 2
+        },
+        "maxNodeCount":{
+            "value": 3
+        },
+        "vmSize":{
+            "value": "Standard_B2s"
+        },
+        "enableKeyVaultAddon":{
+            "value": true
+        },
+        "enableFileDriver":{
+            "value": true
+        },
+        "enableBlobDriver":{
+            "value": true
+        }
+
+    }
+}

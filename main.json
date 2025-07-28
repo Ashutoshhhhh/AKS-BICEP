@@ -1,0 +1,303 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.1.42791",
+      "templateHash": "4248031556422479921"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "resourcePrefix": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "$fxv#0": "{\r\n    \"$schema\": \"https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#\",\r\n    \"contentVersion\": \"1.0.0.0\",\r\n    \"parameters\": {\r\n        \"location\": {\r\n            \"value\": \"centralindia\"\r\n        },\r\n        \"resourcePrefix\":{\r\n            \"value\": \"udpdemo\"\r\n        },\r\n        \"vnetAddressSpace\":{\r\n            \"value\": \"172.172.0.0/16\"\r\n        },\r\n        \"subnetPrefix\":{\r\n            \"value\": \"172.172.1.0/24\"\r\n        },\r\n        \"clusterName\":{\r\n            \"value\": \"udpdemo-aks\"\r\n        },\r\n        \"nodePoolName\":{\r\n            \"value\": \"updemoPool\"\r\n        },\r\n        \"nodeCount\":{\r\n            \"value\": 2\r\n        },\r\n        \"minNodeCount\":{\r\n            \"value\": 2\r\n        },\r\n        \"maxNodeCount\":{\r\n            \"value\": 3\r\n        },\r\n        \"vmSize\":{\r\n            \"value\": \"Standard_B2s\"\r\n        },\r\n        \"enableKeyVaultAddon\":{\r\n            \"value\": true\r\n        },\r\n        \"enableFileDriver\":{\r\n            \"value\": true\r\n        },\r\n        \"enableBlobDriver\":{\r\n            \"value\": true\r\n        }\r\n\r\n    }\r\n}",
+    "params": "[json(variables('$fxv#0')).parameters]"
+  },
+  "resources": {
+    "network": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "networkModule",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "resourcePrefix": {
+            "value": "[parameters('resourcePrefix')]"
+          },
+          "vnetAddressSpace": {
+            "value": "[variables('params').vnetAddressSpace.value]"
+          },
+          "subnetPrefix": {
+            "value": "[variables('params').subnetPrefix.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "17230294684029813207"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "resourcePrefix": {
+              "type": "string"
+            },
+            "subnetPrefix": {
+              "type": "string"
+            },
+            "vnetAddressSpace": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-vnet', parameters('resourcePrefix'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressSpace')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "aks-subnet",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetPrefix')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "vnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', format('{0}-vnet', parameters('resourcePrefix')))]"
+            },
+            "subnetId": {
+              "type": "string",
+              "value": "vnet.properties.subnets[0].id"
+            }
+          }
+        }
+      }
+    },
+    "aksCluster": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "aksClusterDeploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "clusterName": {
+            "value": "[variables('params').clusterName.value]"
+          },
+          "subnetId": {
+            "value": "[reference('network').outputs.subnetId.value]"
+          },
+          "enableKeyVaultAddon": {
+            "value": "[variables('params').enableKeyVaultAddon.value]"
+          },
+          "enableFileDriverAddon": {
+            "value": "[variables('params').enableFileDriver.value]"
+          },
+          "enableBlobDriver": {
+            "value": "[variables('params').enableBlobDriver.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5197116717760372505"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "clusterName": {
+              "type": "string"
+            },
+            "subnetId": {
+              "type": "string"
+            },
+            "enableKeyVaultAddon": {
+              "type": "bool"
+            },
+            "enableFileDriverAddon": {
+              "type": "bool"
+            },
+            "enableBlobDriver": {
+              "type": "bool"
+            }
+          },
+          "resources": {
+            "aks": {
+              "type": "Microsoft.ContainerService/managedClusters",
+              "apiVersion": "2022-02-01",
+              "name": "[parameters('clusterName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "dnsPrefix": "[parameters('clusterName')]",
+                "enableRBAC": true,
+                "kubernetesVersion": "1.30.4",
+                "addonProfiles": {
+                  "enableKeyVaultSecrets": {
+                    "enabled": "[parameters('enableKeyVaultAddon')]"
+                  },
+                  "AzureFileCSI": {
+                    "enabled": "[parameters('enableFileDriverAddon')]"
+                  },
+                  "AzureBlobCSI": {
+                    "enabled": "[parameters('enableBlobDriver')]"
+                  }
+                },
+                "agentPoolProfiles": [
+                  {
+                    "name": "systempool",
+                    "mode": "System",
+                    "count": 1,
+                    "vmSize": "Standard_B2s",
+                    "vnetSubnetID": "[parameters('subnetId')]",
+                    "osType": "Linux",
+                    "orchestratorVersion": "1.30.4"
+                  }
+                ]
+              }
+            }
+          },
+          "outputs": {
+            "kubeConfig": {
+              "type": "string",
+              "value": "[listClusterUserCredential('aks', '2022-02-01').kubeconfigs[0].value]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "network"
+      ]
+    },
+    "nodepool": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nodePoolDeploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "clusterName": {
+            "value": "[variables('params').clusterName.value]"
+          },
+          "nodePoolName": {
+            "value": "[variables('params').nodePoolName.value]"
+          },
+          "nodeCount": {
+            "value": "[variables('params').nodeCount.value]"
+          },
+          "minNodeCount": {
+            "value": "[variables('params').minNodeCount.value]"
+          },
+          "maxNodeCount": {
+            "value": "[variables('params').maxNodeCount.value]"
+          },
+          "vmSize": {
+            "value": "[variables('params').vmSize.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "747595040799941283"
+            }
+          },
+          "parameters": {
+            "clusterName": {
+              "type": "string"
+            },
+            "nodePoolName": {
+              "type": "string"
+            },
+            "nodeCount": {
+              "type": "int"
+            },
+            "minNodeCount": {
+              "type": "int"
+            },
+            "maxNodeCount": {
+              "type": "int"
+            },
+            "vmSize": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerService/managedClusters/agentPools",
+              "apiVersion": "2024-02-01",
+              "name": "[format('{0}/{1}', parameters('clusterName'), parameters('nodePoolName'))]",
+              "properties": {
+                "count": "[parameters('nodeCount')]",
+                "minCount": "[parameters('minNodeCount')]",
+                "maxCount": "[parameters('maxNodeCount')]",
+                "vmSize": "[parameters('vmSize')]",
+                "mode": "User",
+                "availabilityZones": [
+                  "2"
+                ],
+                "enableAutoScaling": true
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "aksCluster",
+        "network"
+      ]
+    }
+  }
+}
