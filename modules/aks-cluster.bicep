@@ -22,9 +22,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
       AzureFileCSI: {
         enabled: enableFileDriverAddon
       }
-      AzureBlobCSI: {
-        enabled: enableBlobDriver
-      }
+      
     }
     agentPoolProfiles: [
       {
