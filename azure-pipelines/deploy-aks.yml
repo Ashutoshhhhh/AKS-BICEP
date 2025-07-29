@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - main
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  resourceGroup: 'aks-cluster-2'
+  location: 'centralindia'
+  deploymentName: 'aks-deployment'
+
+stages:
+- stage: DeployAKS 
+  displayName: 'Deploy AKS Via bicep'
+  jobs:
+  - job: DeployAKS
+    displayName: 'Deploy AKS'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'sc-azure-bicep'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Creating resource group if not exsists..."
+          az group create --name $(resourceGroup) --location $(location)
+          echo "Deploying AKS cluster"
+          az deployment group create --name $(deploymentName) --resource-group $(resourceGroup) --template-file main.bicep --parameters @values.json
+
