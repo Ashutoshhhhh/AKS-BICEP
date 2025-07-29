@@ -18,7 +18,7 @@
             "value": "udpdemo-aks"
         },
         "nodePoolName":{
-            "value": "updemoPool"
+            "value": "ashupool"
         },
         "nodeCount":{
             "value": 2

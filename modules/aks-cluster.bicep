@@ -1,29 +1,53 @@
+@description('Azure region for all resources')
 param location string
-param clusterName string
-param subnetId string
-param enableKeyVaultAddon bool
-param enableFileDriverAddon bool
-param enableBlobDriver bool
 
-resource aks 'Microsoft.ContainerService/managedClusters@2022-02-01' = {
+@description('AKS cluster name')
+param clusterName string
+
+@description('Subnet resource ID')
+param subnetId string
+
+@description('Enable Azure Key Vault Secrets CSI Driver add-on')
+param enableKeyVaultAddon bool = false
+
+@description('Enable Azure Files CSI Driver')
+param enableFileDriverAddon bool = false
+
+@description('Enable Azure Blob CSI Driver')
+param enableBlobDriver bool = false
+
+// Use an API version that supports storageProfile
+resource aks 'Microsoft.ContainerService/managedClusters@2023-02-01' = {
   name: clusterName
   location: location
-  identity:{
+  identity: {
     type: 'SystemAssigned'
   }
   properties: {
     dnsPrefix: clusterName
-    enableRBAC: true
     kubernetesVersion: '1.30.4'
+    enableRBAC: true
+
+    // Valid addonProfiles in this API version
     addonProfiles: {
-      enableKeyVaultSecrets: {
+      // Key Vault provider for Secrets Store CSI driver
+      azureKeyvaultSecretsProvider: {
         enabled: enableKeyVaultAddon
       }
-      AzureFileCSI: {
+    }
+
+    // Configure CSI drivers
+    storageProfile: {
+      // Azure Files CSI driver
+      fileCSIDriver: {
         enabled: enableFileDriverAddon
       }
-      
+      // Azure Blob CSI driver
+      blobCSIDriver: {
+        enabled: enableBlobDriver
+      }
     }
+
     agentPoolProfiles: [
       {
         name: 'systempool'
