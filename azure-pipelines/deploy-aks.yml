@@ -25,5 +25,5 @@ stages:
           echo "Creating resource group if not exsists..."
           az group create --name $(resourceGroup) --location $(location)
           echo "Deploying AKS cluster"
-          az deployment group create --name $(deploymentName) --resource-group $(resourceGroup) --template-file main.bicep --parameters @values.json
+          az deployment group create --name $(deploymentName) --resource-group $(resourceGroup) --template-file $(Build.SourceDirectory)/main.bicep --parameters $(Build.SourceDirectory)@values.json
 
