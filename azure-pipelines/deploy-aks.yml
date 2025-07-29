@@ -2,11 +2,11 @@ trigger:
   branches:
     include:
       - main
-paths:
-  include:
-    - ./main.bicep
-    - ./values.json
-    - ./modules/*
+  paths:
+    include:
+      - main.bicep
+      - values.json
+      - modules/*
 pool:
   vmImage: 'ubuntu-latest'
 variables:
