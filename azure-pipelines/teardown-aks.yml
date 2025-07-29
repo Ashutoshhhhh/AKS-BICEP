@@ -1,0 +1,24 @@
+trigger: none
+pr: none
+pool: 
+  vmImage: 'ubuntu-latest'
+variables:
+  resourceGroup: 'aks-cluster-2'
+  location: 'centralindia'
+  deploymentName: 'aks-teardown'
+stages:
+- stage: TearDown AKS
+  displayName: 'Tear Down AKS '
+  jobs:
+  - job: TearDownResources
+    displayName: 'Tear Down rg $(resourceGroup)'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'sc-azure-bicep'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Deleting resource group $(resourceGroup) and all its resources..."
+          az group delete --name $(resourceGroup) --yes --no-wait
+          echo "Resource group $(resourceGroup) deletion initiated."'
