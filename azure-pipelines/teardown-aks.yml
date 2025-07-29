@@ -21,4 +21,4 @@ stages:
         inlineScript: |
           echo "Deleting resource group $(resourceGroup) and all its resources..."
           az group delete --name $(resourceGroup) --yes --no-wait
-          echo "Resource group $(resourceGroup) deletion initiated."'
+          echo "Resource group $(resourceGroup) deletion initiated."
