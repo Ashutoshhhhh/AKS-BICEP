@@ -7,7 +7,7 @@ variables:
   location: 'centralindia'
   deploymentName: 'aks-teardown'
 stages:
-- stage: TearDown AKS
+- stage: TearDown_AKS
   displayName: 'Tear Down AKS '
   jobs:
   - job: TearDownResources
