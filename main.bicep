@@ -51,3 +51,12 @@ module nodepool'./modules/nodepool.bicep' = {
     vmSize: vmSize
   }
 }
+
+module staticcip './modules/static-ip.bicep' = {
+  name: 'staticIpDeply'
+  params: {
+    location: location
+    clusterName: clusterName
+
+  }
+}
