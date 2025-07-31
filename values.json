@@ -21,10 +21,10 @@
             "value": "ashupool"
         },
         "nodeCount":{
-            "value": 2
+            "value": 1
         },
         "minNodeCount":{
-            "value": 2
+            "value": 1
         },
         "maxNodeCount":{
             "value": 3
