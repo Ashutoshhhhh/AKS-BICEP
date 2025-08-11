@@ -52,11 +52,83 @@ module nodepool'./modules/nodepool.bicep' = {
   }
 }
 
-module staticcip './modules/static-ip.bicep' = {
-  name: 'staticIpDeply'
+// module staticcip './modules/static-ip.bicep' = {
+//   name: 'staticIpDeply'
+//   params: {
+//     location: location
+//     clusterName: clusterName
+
+//   }
+// }
+param kvName string
+
+module keyVault './modules/keyvault.bicep' = {
+  name: 'keyVaultDeploy'
   params: {
     location: location
-    clusterName: clusterName
+    kvName: kvName
+    
+  }
+}
+param pricipalObjectId string
 
+module kvAdmin './modules/kvrole.bicep' = {
+  name: 'keyVaultAdminRole'
+  params: {
+    pricipalObjectId: pricipalObjectId
+    keyVaultId: keyVault.outputs.keyVaultId
+    kvName: kvName
+    
+    
+  }
+}
+
+param appSecretName string
+
+@secure()
+param appSecretValue string
+
+module kvSecret './modules/kvsecret.bicep'= {
+  name: 'keyVaultSecret'
+  params: {
+    keyVaultName: kvName
+    appSecretName: appSecretName
+    appSecretValue: appSecretValue
+    
+  }
+}
+
+param uamiName string
+
+module uami './modules/uami.bicep' = {
+  name: 'uamiDeploy'
+  params: {
+    location: location
+    uamiName: uamiName
+  }
+}
+
+module kvSecretUserRole './modules/secret_user_role.bicep'= {
+  name: 'kvSecretUserRole'
+  params: {
+    kvId: keyVault.outputs.keyVaultId
+    principalObjectId: uami.outputs.uamiId
+    kvName: kvName
+  }
+}
+
+
+param ficName string
+param k8sNamespace string
+param k8sServiceAccount string
+
+module uamiFic './modules/uami-fic.bicep' = {
+  name: 'uamiFicDeploy'
+  params: {
+    uamiName: uamiName
+    ficName: ficName
+    oidcIssuer: aksCluster.outputs.oidcIssuer
+    k8sNamespace: k8sNamespace
+    k8sServiceAccount: k8sServiceAccount
   }
 }

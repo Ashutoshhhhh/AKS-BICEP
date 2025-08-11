@@ -40,7 +40,32 @@
         },
         "enableBlobDriver":{
             "value": true
+        },
+        "kvName":{
+            "value": "aks-kv"
+        },
+        "pricipalObjectId":{
+            "value": "0036dd9d-5656-401e-8ea2-8eb6cff849b3"
+        },
+        "appSecretName":{
+            "value": "aks-app-secret"
+        },
+        "appSecretValue":{
+            "value": "MySecretValue"
+        },
+        "uamiName":{
+            "value": "aks-uami"
+        },
+        "ficName":{
+            "value": "aks-fic"
+        },
+        "k8sNamespace":{
+            "value": "team-dev"
+        },
+        "k8sServiceAccount":{
+            "value": "aks-service-account"
         }
+
 
     }
 }

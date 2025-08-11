@@ -17,7 +17,7 @@ param enableFileDriverAddon bool = false
 param enableBlobDriver bool = false
 
 // Use an API version that supports storageProfile
-resource aks 'Microsoft.ContainerService/managedClusters@2023-02-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2024-05-01' = {
   name: clusterName
   location: location
   identity: {
@@ -35,6 +35,15 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-02-01' = {
         enabled: enableKeyVaultAddon
       }
     }
+    oidcIssuerProfile:{
+      enabled: true
+    }
+    securityProfile: {
+      workloadIdentity: {
+        enabled: true
+      }
+    }
+    
 
     // Configure CSI drivers
     storageProfile: {
@@ -63,3 +72,4 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-02-01' = {
 }
 
 
+output oidcIssuer string = aks.properties.oidcIssuerProfile.issuerURL

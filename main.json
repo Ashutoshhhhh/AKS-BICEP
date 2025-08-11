@@ -1,12 +1,11 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.36.1.42791",
-      "templateHash": "4248031556422479921"
+      "version": "0.37.4.10188",
+      "templateHash": "15624026113760160988"
     }
   },
   "parameters": {
@@ -15,14 +14,61 @@
     },
     "resourcePrefix": {
       "type": "string"
+    },
+    "vnetAddressSpace": {
+      "type": "string"
+    },
+    "subnetPrefix": {
+      "type": "string"
+    },
+    "clusterName": {
+      "type": "string"
+    },
+    "nodePoolName": {
+      "type": "string"
+    },
+    "nodeCount": {
+      "type": "int"
+    },
+    "minNodeCount": {
+      "type": "int"
+    },
+    "maxNodeCount": {
+      "type": "int"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "enableKeyVaultAddon": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "enableFileDriver": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "enableBlobDriver": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "kvName": {
+      "type": "string"
+    },
+    "pricipalObjectId": {
+      "type": "string"
+    },
+    "appSecretName": {
+      "type": "string"
+    },
+    "appSecretValue": {
+      "type": "securestring"
+    },
+    "uamiName": {
+      "type": "string"
     }
   },
-  "variables": {
-    "$fxv#0": "{\r\n    \"$schema\": \"https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#\",\r\n    \"contentVersion\": \"1.0.0.0\",\r\n    \"parameters\": {\r\n        \"location\": {\r\n            \"value\": \"centralindia\"\r\n        },\r\n        \"resourcePrefix\":{\r\n            \"value\": \"udpdemo\"\r\n        },\r\n        \"vnetAddressSpace\":{\r\n            \"value\": \"172.172.0.0/16\"\r\n        },\r\n        \"subnetPrefix\":{\r\n            \"value\": \"172.172.1.0/24\"\r\n        },\r\n        \"clusterName\":{\r\n            \"value\": \"udpdemo-aks\"\r\n        },\r\n        \"nodePoolName\":{\r\n            \"value\": \"updemoPool\"\r\n        },\r\n        \"nodeCount\":{\r\n            \"value\": 2\r\n        },\r\n        \"minNodeCount\":{\r\n            \"value\": 2\r\n        },\r\n        \"maxNodeCount\":{\r\n            \"value\": 3\r\n        },\r\n        \"vmSize\":{\r\n            \"value\": \"Standard_B2s\"\r\n        },\r\n        \"enableKeyVaultAddon\":{\r\n            \"value\": true\r\n        },\r\n        \"enableFileDriver\":{\r\n            \"value\": true\r\n        },\r\n        \"enableBlobDriver\":{\r\n            \"value\": true\r\n        }\r\n\r\n    }\r\n}",
-    "params": "[json(variables('$fxv#0')).parameters]"
-  },
-  "resources": {
-    "network": {
+  "resources": [
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "networkModule",
@@ -39,10 +85,10 @@
             "value": "[parameters('resourcePrefix')]"
           },
           "vnetAddressSpace": {
-            "value": "[variables('params').vnetAddressSpace.value]"
+            "value": "[parameters('vnetAddressSpace')]"
           },
           "subnetPrefix": {
-            "value": "[variables('params').subnetPrefix.value]"
+            "value": "[parameters('subnetPrefix')]"
           }
         },
         "template": {
@@ -51,8 +97,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "17230294684029813207"
+              "version": "0.37.4.10188",
+              "templateHash": "1440809445461165308"
             }
           },
           "parameters": {
@@ -99,13 +145,13 @@
             },
             "subnetId": {
               "type": "string",
-              "value": "vnet.properties.subnets[0].id"
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}-vnet', parameters('resourcePrefix'))), '2022-09-01').subnets[0].id]"
             }
           }
         }
       }
     },
-    "aksCluster": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "aksClusterDeploy",
@@ -119,56 +165,76 @@
             "value": "[parameters('location')]"
           },
           "clusterName": {
-            "value": "[variables('params').clusterName.value]"
+            "value": "[parameters('clusterName')]"
           },
           "subnetId": {
-            "value": "[reference('network').outputs.subnetId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'networkModule'), '2022-09-01').outputs.subnetId.value]"
           },
           "enableKeyVaultAddon": {
-            "value": "[variables('params').enableKeyVaultAddon.value]"
+            "value": "[parameters('enableKeyVaultAddon')]"
           },
           "enableFileDriverAddon": {
-            "value": "[variables('params').enableFileDriver.value]"
+            "value": "[parameters('enableFileDriver')]"
           },
           "enableBlobDriver": {
-            "value": "[variables('params').enableBlobDriver.value]"
+            "value": "[parameters('enableBlobDriver')]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "languageVersion": "2.0",
           "contentVersion": "1.0.0.0",
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "5197116717760372505"
+              "version": "0.37.4.10188",
+              "templateHash": "1634918517067382425"
             }
           },
           "parameters": {
             "location": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for all resources"
+              }
             },
             "clusterName": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "AKS cluster name"
+              }
             },
             "subnetId": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Subnet resource ID"
+              }
             },
             "enableKeyVaultAddon": {
-              "type": "bool"
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Azure Key Vault Secrets CSI Driver add-on"
+              }
             },
             "enableFileDriverAddon": {
-              "type": "bool"
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Azure Files CSI Driver"
+              }
             },
             "enableBlobDriver": {
-              "type": "bool"
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Azure Blob CSI Driver"
+              }
             }
           },
-          "resources": {
-            "aks": {
+          "resources": [
+            {
               "type": "Microsoft.ContainerService/managedClusters",
-              "apiVersion": "2022-02-01",
+              "apiVersion": "2024-05-01",
               "name": "[parameters('clusterName')]",
               "location": "[parameters('location')]",
               "identity": {
@@ -176,16 +242,26 @@
               },
               "properties": {
                 "dnsPrefix": "[parameters('clusterName')]",
-                "enableRBAC": true,
                 "kubernetesVersion": "1.30.4",
+                "enableRBAC": true,
                 "addonProfiles": {
-                  "enableKeyVaultSecrets": {
+                  "azureKeyvaultSecretsProvider": {
                     "enabled": "[parameters('enableKeyVaultAddon')]"
-                  },
-                  "AzureFileCSI": {
+                  }
+                },
+                "oidcIssuerProfile": {
+                  "enabled": true
+                },
+                "securityProfile": {
+                  "workloadIdentity": {
+                    "enabled": true
+                  }
+                },
+                "storageProfile": {
+                  "fileCSIDriver": {
                     "enabled": "[parameters('enableFileDriverAddon')]"
                   },
-                  "AzureBlobCSI": {
+                  "blobCSIDriver": {
                     "enabled": "[parameters('enableBlobDriver')]"
                   }
                 },
@@ -202,20 +278,14 @@
                 ]
               }
             }
-          },
-          "outputs": {
-            "kubeConfig": {
-              "type": "string",
-              "value": "[listClusterUserCredential('aks', '2022-02-01').kubeconfigs[0].value]"
-            }
-          }
+          ]
         }
       },
       "dependsOn": [
-        "network"
+        "[resourceId('Microsoft.Resources/deployments', 'networkModule')]"
       ]
     },
-    "nodepool": {
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "nodePoolDeploy",
@@ -226,22 +296,22 @@
         "mode": "Incremental",
         "parameters": {
           "clusterName": {
-            "value": "[variables('params').clusterName.value]"
+            "value": "[parameters('clusterName')]"
           },
           "nodePoolName": {
-            "value": "[variables('params').nodePoolName.value]"
+            "value": "[parameters('nodePoolName')]"
           },
           "nodeCount": {
-            "value": "[variables('params').nodeCount.value]"
+            "value": "[parameters('nodeCount')]"
           },
           "minNodeCount": {
-            "value": "[variables('params').minNodeCount.value]"
+            "value": "[parameters('minNodeCount')]"
           },
           "maxNodeCount": {
-            "value": "[variables('params').maxNodeCount.value]"
+            "value": "[parameters('maxNodeCount')]"
           },
           "vmSize": {
-            "value": "[variables('params').vmSize.value]"
+            "value": "[parameters('vmSize')]"
           }
         },
         "template": {
@@ -250,8 +320,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.36.1.42791",
-              "templateHash": "747595040799941283"
+              "version": "0.37.4.10188",
+              "templateHash": "6922839361460545001"
             }
           },
           "parameters": {
@@ -295,9 +365,316 @@
         }
       },
       "dependsOn": [
-        "aksCluster",
-        "network"
+        "[resourceId('Microsoft.Resources/deployments', 'aksClusterDeploy')]",
+        "[resourceId('Microsoft.Resources/deployments', 'networkModule')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVaultDeploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "kvName": {
+            "value": "[parameters('kvName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "17559733791386558861"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "kvName": {
+              "type": "string"
+            },
+            "enablePurgeProteciton": {
+              "type": "bool",
+              "defaultValue": true
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('kvName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "enableRbacAuthorization": true,
+                "enablePurgeProtection": "[parameters('enablePurgeProteciton')]",
+                "enableSoftDelete": true,
+                "networkAcls": {
+                  "bypass": "AzureServices",
+                  "defaultAction": "Allow"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "keyVaultId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('kvName'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVaultAdminRole",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "pricipalObjectId": {
+            "value": "[parameters('pricipalObjectId')]"
+          },
+          "keyVaultId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'keyVaultDeploy'), '2022-09-01').outputs.keyVaultId.value]"
+          },
+          "kvName": {
+            "value": "[parameters('kvName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "14793403006337043631"
+            }
+          },
+          "parameters": {
+            "pricipalObjectId": {
+              "type": "string"
+            },
+            "keyVaultId": {
+              "type": "string"
+            },
+            "kvName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "roleDefinitionId": "00482a5a-887f-4fb3-b363-3b7fe8e74483"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('kvName'))]",
+              "name": "[guid(parameters('keyVaultId'), parameters('pricipalObjectId'), variables('roleDefinitionId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                "principalId": "[parameters('pricipalObjectId')]",
+                "principalType": "User"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'keyVaultDeploy')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "keyVaultSecret",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('kvName')]"
+          },
+          "appSecretName": {
+            "value": "[parameters('appSecretName')]"
+          },
+          "appSecretValue": {
+            "value": "[parameters('appSecretValue')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "17354883444844712448"
+            }
+          },
+          "parameters": {
+            "appSecretName": {
+              "type": "string"
+            },
+            "appSecretValue": {
+              "type": "securestring"
+            },
+            "keyVaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2024-11-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('appSecretName'))]",
+              "properties": {
+                "value": "[parameters('appSecretValue')]"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "uamiDeploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "uamiName": {
+            "value": "[parameters('uamiName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "9813857175515389049"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "uamiName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[parameters('uamiName')]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "uamiId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('uamiName'))]"
+            },
+            "uamiClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('uamiName')), '2023-01-31').clientId]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "kvSecretUserRole",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "kvId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'keyVaultDeploy'), '2022-09-01').outputs.keyVaultId.value]"
+          },
+          "principalObjectId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'uamiDeploy'), '2022-09-01').outputs.uamiId.value]"
+          },
+          "kvName": {
+            "value": "[parameters('kvName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.37.4.10188",
+              "templateHash": "16465720862476535552"
+            }
+          },
+          "parameters": {
+            "kvId": {
+              "type": "string"
+            },
+            "principalObjectId": {
+              "type": "string"
+            },
+            "kvName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "roleDefinitionId": "4633458b-17de-408a-b874-0445c86b69e6"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('kvName'))]",
+              "name": "[guid(parameters('kvId'), parameters('principalObjectId'), variables('roleDefinitionId'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefinitionId'))]",
+                "principalId": "[parameters('principalObjectId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'keyVaultDeploy')]",
+        "[resourceId('Microsoft.Resources/deployments', 'uamiDeploy')]"
       ]
     }
-  }
+  ]
 }
