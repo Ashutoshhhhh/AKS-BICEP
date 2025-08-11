@@ -90,6 +90,9 @@ param appSecretValue string
 
 module kvSecret './modules/kvsecret.bicep'= {
   name: 'keyVaultSecret'
+  dependsOn: [
+    keyVault
+  ]
   params: {
     keyVaultName: kvName
     appSecretName: appSecretName
