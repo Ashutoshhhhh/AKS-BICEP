@@ -42,7 +42,7 @@
             "value": true
         },
         "kvName":{
-            "value": "aks-kv"
+            "value": "kv-aks-ashutoshnegi-01"
         },
         "pricipalObjectId":{
             "value": "0036dd9d-5656-401e-8ea2-8eb6cff849b3"
